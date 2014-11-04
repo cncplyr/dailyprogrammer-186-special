@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Daily Programmer #165 [Hard]: Simulated Ecology - The Forest</title>
+	
+	<!-- 3rd Party -->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+	
+	<!-- Ours -->
+	<script src="js/map.js"></script>
+	<script src="js/agents.js"></script>
+	<script src="js/simulation.js"></script>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-10">
+				<canvas id="canvas" width="600" height="600"></canvas>
+			</div>
+			<div class="col-md-2 panel panel-default">
+				<div class="panel-body">
+					<button type="button" class="btn btn-default btn-block" onclick="reset();">Reset</button>
+					<button type="button" class="btn btn-default btn-block" onclick="tick();">Tick</button>
+					<button type="button" class="btn btn-primary btn-block" onclick="toggleRun();">Start/Stop</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas');
+		var cellSize = 10;
+		var simulationSize = 59
+		var s = new Simulation(simulationSize);
+		var running = false;
+		
+		draw();
+		setInterval('run()', 50);
+		
+		function reset() {
+			s = new Simulation(simulationSize);
+			draw();
+		}
+		
+		function toggleRun(){
+			running = running ? false : true;
+		}
+		
+		function run() {
+			if (running) {
+				tick();
+			}
+		}
+	
+		function tick() {
+			s.tick();
+			draw();
+		}
+	
+		function draw() {
+			canvas.width = canvas.width;
+			var ctx = canvas.getContext('2d');x
+			
+			var size = cellSize;
+			var map = s.map
+			
+			ctx.save();
+			ctx.translate(size, size);
+			
+			for(var x = 0; x < map.mapSize; x++){
+				for(var y = 0; y < map.mapSize; y++){
+					var agents = map.get(x, y);
+				
+					if (agents instanceof Array && agents.length > 0) {
+						// Set the colour for that agent
+						switch(agents[0].type){ 
+							case 'zombie':
+								// zombies are green
+								ctx.fillStyle = 'rgb(119, 221, 119)';
+								break;
+							case 'hunter':
+								// hunter wear red
+								ctx.fillStyle = 'rgb(190, 0, 50)';
+								break;
+							case 'victim':
+								// victims are blue
+								ctx.fillStyle = 'rgb(0, 50, 190)';
+								break;
+						}
+						// Draw a circle where the agent is
+						ctx.moveTo(x*size+(size/2),y*size);
+						ctx.beginPath();
+						ctx.arc(x*size, y*size, size/2, 0, 2*Math.PI);
+						ctx.closePath();
+						ctx.fill();
+					}
+				}
+			}
+			
+			ctx.restore();
+		}
+	</script>
+</body>
+</html>
