@@ -40,7 +40,7 @@ Map.prototype.put = function(x, y, obj) {
 }
 
 Map.prototype.remove = function(x, y, obj) {
-	var currentLocation = this.grid[x][y];
+	var currentLocation = this.grid[this.getSafeCoord(x)][this.getSafeCoord(y)];
 	if (currentLocation instanceof Array) {
 		var index = $.inArray(obj, currentLocation);
 		if (index > -1) {
@@ -50,7 +50,7 @@ Map.prototype.remove = function(x, y, obj) {
 }
 
 Map.prototype.get = function(x, y) {
-	return this.grid[x][y];
+	return this.grid[this.getSafeCoord(x)][this.getSafeCoord(y)];
 }
 
 // Returns 3x3 local area as a flat array, elems have x/y coords
@@ -65,7 +65,7 @@ Map.prototype.getLocalArea = function(xCoord, yCoord) {
 			localArea.push({
 				x: posX,
 				y: posY,
-				objects: this.grid[posX][posY]
+				agent: this.grid[posX][posY]
 			});
 		}
 	}
@@ -74,8 +74,6 @@ Map.prototype.getLocalArea = function(xCoord, yCoord) {
 
 // Toroid
 Map.prototype.getSafeCoord = function(coord) {
-	// return coord%this.mapSize;
-	if (coord < 0) return this.mapSize - 1;
-	if (coord >= this.mapSize) return 0;
-	return coord;
+	if (coord > 0) return coord % this.mapSize;
+	return this.mapSize - Math.abs(-1 % this.mapSize)
 }

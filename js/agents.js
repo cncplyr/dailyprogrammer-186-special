@@ -25,16 +25,16 @@ Zombie.prototype.move = function() {
 	
 	switch (direction) {
 		case 0:
-			y = map.getSafeCoord(y-1);
+			y = y-1;
 			break;
 		case 1:
-			x = map.getSafeCoord(x+1);
+			x = x+1;
 			break;
 		case 2:
-			y = map.getSafeCoord(y+1);
+			y = y+1;
 			break;
 		case 3:
-			x = map.getSafeCoord(x-1);
+			x = x-1;
 			break;
 		default:
 			break;
@@ -57,10 +57,11 @@ Zombie.prototype.attack = function() {
 	var y = this.y;
 	
 	var directions = [
-		{x: map.getSafeCoord(x-1), y: y},	// North
-		{x: x, y: map.getSafeCoord(y+1)},	// East
-		{x: map.getSafeCoord(x+1), y: y},	// South
-		{x: x, y: map.getSafeCoord(y-1)}	// West
+		// Cardinal directions
+		{x: x, y: y-1},
+		{x: x+1, y: y},
+		{x: x, y: y+1},
+		{x: x-1, y: y},
 	];
 	
 	$.each(directions, function(k, direction) {
@@ -82,7 +83,38 @@ function Victim() {
 Victim.prototype = new Agent();
 Victim.prototype.constructor = Victim;
 Victim.prototype.move = function() {
+	var simulation = this.simulation;
+	var map = this.simulation.map;
 
+	var x = this.x;
+	var y = this.y;
+
+	// TODO: Smarter escape logic
+	var surroundings = map.getLocalArea(x, y);
+	var zombieNearby = false;
+	
+	$.each(surroundings, function(k, location) {
+		if (location.agent != null || location.agent != undefined) {
+			if (location.agent.length > 0 && location.agent[0].type === "zombie") {
+				zombieNearby = true;
+			}
+		}
+	});
+	
+	if (zombieNearby) {
+		var newX = x;
+		var newY = y;
+		
+		$.each(surroundings, function(k, location) {
+			if (location.agent === null || location.agent === undefined || location.agent.length === 0) {
+				newX = location.x;
+				newY = location.y;
+				return;
+			}
+		});
+		
+		simulation.move(newX, newY, this);
+	}
 }
 Victim.prototype.attack = function() { }
 

@@ -30,10 +30,11 @@ Simulation.prototype.tick = function() {
 		v.move();
 	});
 	// Attack with all agents
-	$.each(zombies, function(k, v) {
+	
+	$.each(hunters, function(k, v) {
 		v.attack();
 	});
-	$.each(hunters, function(k, v) {
+	$.each(zombies, function(k, v) {
 		v.attack();
 	});
 	
@@ -63,8 +64,8 @@ Simulation.prototype.seed = function(agentType, amount) {
 	var location = null;
 	
 	while (amount > 0) {
-		x = map.getSafeCoord(Math.floor(Math.random() * mapSize));
-		y = map.getSafeCoord(Math.floor(Math.random() * mapSize));
+		x = Math.floor(Math.random() * mapSize);
+		y = Math.floor(Math.random() * mapSize);
 		
 		location = map.get(x, y);
 		if (location == null || location.length == 0) {
